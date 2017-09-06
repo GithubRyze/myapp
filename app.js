@@ -1,10 +1,12 @@
 var express = require('express');
-var http = require('http');
-var favicon = require('serve-favicon');
-var url = require('url');
-var app = express();
-var fs = require('fs');
+var config = require('config-lite');
+var router = require('./routes/index.js');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 var path = require('path');
+var bodyParser = require('body-parser');
 //添加MIME类型
 var MIME_TYPE = {
     "css": "text/css",
@@ -27,7 +29,70 @@ var MIME_TYPE = {
     "xml": "text/xml"
 };
 
-var server = http.createServer((req,res) =>{
+const app = express();
+
+app.all('*', (req, res, next) => {
+	res.header("Access-Control-Allow-Origin", req.headers.origin || '*');
+	res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+	res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Credentials", true); //可以带cookies
+	res.header("X-Powered-By", '3.2.1')
+	if (req.method == 'OPTIONS') {
+	  	res.send(200);
+	} else {
+	    next();
+	}
+});
+
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cookieParser());
+app.use(session({
+	  	name: config.session.name,
+		secret: config.session.secret,
+		resave: true,
+		saveUninitialized: false,
+		cookie: config.session.cookie,
+		
+}));
+
+app.use(expressWinston.logger({
+    transports: [
+        new (winston.transports.Console)({
+          json: true,
+          colorize: true
+        }),
+        new winston.transports.File({
+          filename: 'logs/success.log'
+        })
+    ]
+}));
+
+router(app);
+
+app.use(expressWinston.errorLogger({
+    transports: [
+        new winston.transports.Console({
+          json: true,
+          colorize: true
+        }),
+        new winston.transports.File({
+          filename: 'logs/error.log'
+        })
+    ]
+}));
+app.use("/lib",express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static('./public'));
+app.use((err, req, res, next) => {
+	res.status(404).send('未找到当前路由');
+});
+
+console.log("config.port:"+config.port);
+app.listen(config.port);
+
+/*var server = http.createServer((req,res) =>{
 
 	console.log('url::'+req.url);
 	var filePath;
@@ -59,6 +124,5 @@ var server = http.createServer((req,res) =>{
 			res.end(data.toString());
 		});
 	});
-	
-}).listen(3000);
-console.log("server is staring in port:%d",3000);
+}).listen(3000);*/
+//console.log("server is staring in port:%d",3000);
