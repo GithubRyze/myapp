@@ -7,6 +7,7 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var path = require('path');
 var bodyParser = require('body-parser');
+var jwt = require('jwt-simple');
 //添加MIME类型
 var MIME_TYPE = {
     "css": "text/css",
@@ -36,11 +37,28 @@ app.all('*', (req, res, next) => {
 	res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
 	res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("Access-Control-Allow-Credentials", true); //可以带cookies
-	res.header("X-Powered-By", '3.2.1')
+	res.header("X-Powered-By", '3.2.1');
+	//var token = req.header.token;
+	//console.log(token);
 	if (req.method == 'OPTIONS') {
 	  	res.send(200);
 	} else {
-	    next();
+		next();
+		/*if (req.url === '/user/login' ||req.url === '/index') {
+			 next();
+			}else {
+				var token  = req.headers.token;
+				console.log('decode::'+ token);
+				if(token === undefined){
+					res.status(200).end('please login');
+					return;
+				}
+				var decode = jwt.decode(token,'secret');
+				console.log('decode::'+ JSON.stringify(decode));
+				req.headers.token = decode;
+				next();
+			}*/
+	   
 	}
 });
 
@@ -84,7 +102,7 @@ app.use(expressWinston.errorLogger({
     ]
 }));
 app.use("/lib",express.static(path.join(__dirname, 'node_modules')));
-app.use(express.static('./public'));
+app.use(express.static('public'));
 app.use((err, req, res, next) => {
 	res.status(404).send('未找到当前路由');
 });

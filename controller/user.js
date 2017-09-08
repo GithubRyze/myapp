@@ -3,6 +3,7 @@
 var db = require('../db/db.js');
 var fs = require('fs');
 var path = require('path');
+var jwt = require('jwt-simple');
 	//添加MIME类型
 var MIME_TYPE = {
     "css": "text/css",
@@ -26,10 +27,54 @@ var MIME_TYPE = {
 };
 module.exports = {
 	
-	
+	loginIndex : function(req,res,next){
+			fs.readFile('./public/static/index2.html', null, function(err,data){
+			if (err) {
+				console.log('err:'+err);
+				res.writeHead(404,{'Content-Type':'text/plain'});
+				res.end('404 not found');
+				return;
+			}
+			var ext = path.extname('./public/static/index2.html');
+			ext = ext ? ext.slice(1):'unkown';
+			console.log('ext::'+ext);
+			var content_type = MIME_TYPE[ext] || 'text/plain';
+			res.writeHead(200,{'Content-Type':content_type});
+			res.end(data.toString());
+		});
+	},
 	//user login
 	 login : function(req,res,next){
-	 	
+	 	var name = req.body.name;
+	 	var password = req.body.password;
+	 	var sql = 'select * from user where name = ' + "'" + name + "'" + ' and password = '+ "'" + password + "'";
+	 	console.log("login sql::"+sql);
+	 	db.query(sql,function(err,results){
+	 		if(err){
+	 			let error = {code : 103,message : err};
+	 			res.status(200).end(JSON.stringify(error));
+	 			//console.log("error::"+err);
+	 			return;
+	 		}
+	 		//console.log("login sql::"+JSON.stringify(results));
+	 		if(results.length !== 0){
+	 			var payload = {
+	 				id : results[0].id,
+	 				name : results[0].name,
+	 				admin : false
+	 			};
+	 			var secret = 'secret';
+	 			var token = jwt.encode(payload, secret);
+	 			console.log('token ::'+token);
+	 			var result = {code : 100 ,message : 'login success',results : results};
+	 			res.header("token",token);
+	 			res.status(200).end(JSON.stringify(result));
+	 		}else{
+	 			var result = {code : 105,message : 'login failed,not found user'};
+	 			res.status(200).end(JSON.stringify(result));
+	 		}
+
+	 	});
 
 	},
 
@@ -131,8 +176,46 @@ module.exports = {
 		});
 	},
 	//delete user
-	deleteUser : function(req,res,next){},
+	deleteUser : function(req,res,next){
+		var deleteID = req.body.userId;
+		var sql = 'delete from user where id = ' + deleteID;
+		db.query(sql,function(err,results){
+			if (err) {
+				let error = {code : 103,message : err};
+	 			res.status(200),(JSON.stringify(error));
+				return;
+			}
+			console.log("delete user affectedRows:"+results.affectedRows);
+			res.status(200).end('delete success');
+		});
+	},
 	//update user
-	updateUser :function(req,res,next){}
+	updateUser :function(req,res,next){
+		var user = {
+			userId : req.body.userId,
+		 	name : name,
+		 	password : password,
+		 	email : email,
+		 	sex : sex,
+		 	heigh : heigh,
+		 	weight : weight,
+		 	age : age			
+
+	 	}; 
+	 	var updateSql = 'update user set name = ' + "'"+user.name + "'," + 'password = ' + "'" + password + "'," 
+	 	+ 'email = ' + "'" + email + "',"+ 'sex = ' + sex + ',' + 'heigh = ' + heigh + ',' + 'weight = ' + weight + ','
+	 	+ 'age = ' + agt + 'where id = ' + user.userId;
+	 	console.log('update user sql::'+updateSql);
+	 	db.query(updateSql,function(err,results){
+	 		if (err) {
+				let error = {code : 103,message : err};
+	 			res.status(200),(JSON.stringify(error));
+				return;
+			}
+			console.log("update user affectedRows:"+results.affectedRows);
+			res.status(200).end('update success');
+	 	});
+
+	}
 
 };
