@@ -8,10 +8,15 @@
         <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
         <script src="/lib/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" src="/lib/bootstrap-table/dist/bootstrap-table.js" ></script>
-        <script type="text/javascript" src="/lib/bootstrap-table/dist/bootstrap-table-local-all.js"></script>
+        <!-- <script type="text/javascript" src="/lib/bootstrap-table/dist/bootstrap-table-local-all.js"></script> -->
         <script type="text/javascript" src="/lib/bootstrap-table/src/locale/bootstrap-table-zh-CN.js"></script>
         <link rel="stylesheet" type="text/css" href="/lib/bootstrap-table/dist/bootstrap-table.css" >
     </head>
+    <script type="text/javascript" charset="utf-8" src = "/javascripts/login.js">
+       
+
+        
+    </script>   
 
     <body>
         <div class="container-fluid">
@@ -21,7 +26,7 @@
                 </div>
             </div>
             <div class="container">
-                <table id="boold_record_table" data-toggle="table" data-url="http://localhost:8001/bloodrecord/allRecord" data-method="get"
+                <table id="boold_record_table" data-toggle="table" data-url="http://localhost:8001/bp_api/bloodrecord/allRecord" data-method="get"
                     
                         data-toolbar="#toolbar"
                         data-pagination="true"
@@ -31,6 +36,7 @@
                         data-show-columns="true"
                         data-page-size="10"
                         data-side-pagination = "client"
+                        data-ajax-options="ajaxOptions"
                         >
                     <thead>
                         <tr>

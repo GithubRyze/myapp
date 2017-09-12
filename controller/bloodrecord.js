@@ -114,7 +114,8 @@ module.exports = {
 		}*/
 		//var sql = 'select * from bloodpressure limit ' + (page - 1)*10 + ',' + 10;
 		var admin = req.headers.token.admin;
-		console.log('getAllRecord:'+req.headers.token);
+		console.log('\n req.headers.token:'+req.headers.token);
+		console.log('\n req.headers.token.id:'+req.headers.token.id);
 		var sql = sql = 'select * from bloodpressure where userId = ' + req.headers.token.id;		
 		if(admin)
 		 	sql = 'select * from bloodpressure';

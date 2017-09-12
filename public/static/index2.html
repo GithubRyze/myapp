@@ -16,8 +16,7 @@
         <link rel="stylesheet" type="text/css" href="/static/css/demo.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/style2.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/animate-custom.css" />
-        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-      
+        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>                 
     </head>
     <body>
         <div class="container">
@@ -32,37 +31,22 @@
                                 <h1>Log in</h1> 
                                 <p> 
                                     <label for="username" class="uname" data-icon="u" > Your email or username </label>
-                                    <input id="username" name="username" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
+                                    <input id="username" name="name" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
                                 </p>
                                 <p> 
                                     <label for="password" class="youpasswd" data-icon="p"> Your password </label>
                                     <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO" /> 
                                 </p>
                                 <p class="login button"> 
-                                    <input type="submit"  value="Login" />
+                                    <input type="submit"  value="Login" id="send" />
 								</p>
                             </form>
                         </div>
 						
                     </div>
                 </div>  
-        </div>          
-          <script type="text/javascript" charset="utf-8" >
-
-         function login() {
-                alter('test test');
-                $.ajax({
-                    type: "post",
-                    url: "http://localhost:8001/user/login",
-                    data: $("form").serialize(),
-                    async: true,
-                    success: function(data) {
-                        alert(data);
-                    },
-                    dataType: "json" // json 格式的返回值
-                });          
-        }
-              
-        </script>
+        </div>   
+          <script type="text/javascript" charset="utf-8"  src = "/javascripts/login.js"></script> 
     </body>
+
 </html>

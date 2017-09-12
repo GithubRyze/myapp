@@ -25,28 +25,34 @@ var MIME_TYPE = {
     "wmv": "video/x-ms-wmv",
     "xml": "text/xml"
 };
-module.exports = {
-	
-	loginIndex : function(req,res,next){
-			fs.readFile('./public/static/index2.html', null, function(err,data){
+
+function renderHtml(req,res){
+
+	fs.readFile('./public/static/index.html', null, function(err,data){
 			if (err) {
 				console.log('err:'+err);
 				res.writeHead(404,{'Content-Type':'text/plain'});
 				res.end('404 not found');
 				return;
 			}
-			var ext = path.extname('./public/static/index2.html');
+			var ext = path.extname('./public/static/index.html');
 			ext = ext ? ext.slice(1):'unkown';
 			console.log('ext::'+ext);
 			var content_type = MIME_TYPE[ext] || 'text/plain';
 			res.writeHead(200,{'Content-Type':content_type});
 			res.end(data.toString());
 		});
-	},
+
+}
+
+module.exports = {
+	
+	
 	//user login
 	 login : function(req,res,next){
 	 	var name = req.body.name;
 	 	var password = req.body.password;
+	 	var isPhone = req.body.isPhone;
 	 	var sql = 'select * from user where name = ' + "'" + name + "'" + ' and password = '+ "'" + password + "'";
 	 	console.log("login sql::"+sql);
 	 	db.query(sql,function(err,results){
@@ -65,17 +71,21 @@ module.exports = {
 	 			};
 	 			var secret = 'secret';
 	 			var token = jwt.encode(payload, secret);
-	 			console.log('token ::'+token);
-	 			var result = {code : 100 ,message : 'login success',results : results};
+	 			//console.log('token ::'+token); 			
 	 			res.header("token",token);
-	 			res.status(200).end(JSON.stringify(result));
+	 			//if(isPhone !== undefined && isPhone){
+		 			var result = {code : 100 ,message : 'login success',results : results};
+		 			res.status(200).end(JSON.stringify(result));
+	 			//}
+	 			//else{
+	 				//renderHtml(req,res);
+	 			//}
 	 		}else{
 	 			var result = {code : 105,message : 'login failed,not found user'};
 	 			res.status(200).end(JSON.stringify(result));
 	 		}
 
 	 	});
-
 	},
 
 	//user sigonout
@@ -160,20 +170,7 @@ module.exports = {
 	//get user
 	getUser : function(req,res,next){
 
-		fs.readFile('./public/static/index.html', null, function(err,data){
-			if (err) {
-				console.log('err:'+err);
-				res.writeHead(404,{'Content-Type':'text/plain'});
-				res.end('404 not found');
-				return;
-			}
-			var ext = path.extname('./public/static/index.html');
-			ext = ext ? ext.slice(1):'unkown';
-			console.log('ext::'+ext);
-			var content_type = MIME_TYPE[ext] || 'text/plain';
-			res.writeHead(200,{'Content-Type':content_type});
-			res.end(data.toString());
-		});
+		
 	},
 	//delete user
 	deleteUser : function(req,res,next){

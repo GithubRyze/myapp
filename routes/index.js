@@ -6,12 +6,11 @@ var path = require('path');
 
 module.exports = router =>{
 
-	router.use('/user',user);
-	router.use('/bloodrecord',booldrecord);
+	router.use('/bp_api/user',user);
+	router.use('/bp_api/bloodrecord',booldrecord);
 	router.get('/index',function(req,res,next){
 		 index(req,res,next);
 	});
-	
 }
 
 var MIME_TYPE = {
