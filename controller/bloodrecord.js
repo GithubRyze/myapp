@@ -27,7 +27,7 @@ module.exports = {
 			return;
 
 		}
-		var sql = 'insert into bloodpressure (userId,dbp,sbp,hb,health) values ('+ blood.userId + ',' + blood.dbp + ',' + 
+		var sql = 'insert into bp_record (userId,DBP,SBP,HB,health) values ('+ blood.userId + ',' + blood.dbp + ',' + 
 		blood.sbp + ',' + blood.hb + ',' + blood.health +')';
 		console.log('add Record Sql::'+sql);
 		db.query(sql,function(err,results){
@@ -50,7 +50,7 @@ module.exports = {
 	},
 	deleteRecord : function(req,res,next){
 		var blood_id = req.body.blood_id;
-		var sql = 'delete from bloodpressure where id = ' + blood_id;
+		var sql = 'delete from bp_record where id = ' + blood_id;
 		db.query(sql,function(err,results){
 			if (err) {
 		 		let error = {code : 103,message : err};
@@ -66,7 +66,7 @@ module.exports = {
 
 		var blood_id = req.query.boold_id;
 		console.log('blood_id:'+blood_id);
-		var sql = 'select * from bloodpressure where id = '+blood_id;
+		var sql = 'select * from bp_record where id = '+blood_id;
 		console.log('getRecord sql:'+sql);
 		db.query(sql,function(err,results){
 			if (err) {
@@ -88,7 +88,7 @@ module.exports = {
 			hb : req.body.hb,
 			health : req.body.health
 		};
-		var updateSql = 'update bloodpressure set dbp = '+ blood.dbp + ',sbp = '+ blood.sbp + ',hb = ' + blood.hb +
+		var updateSql = 'update bp_record set DBP = '+ blood.dbp + ',SBP = '+ blood.sbp + ',HB = ' + blood.hb +
 		 ',health = ' + blood.health + ' where id = ' +blood.id;
 		 console.log("update sql:"+updateSql);
 		 db.query(updateSql,function(err,results){
@@ -116,9 +116,9 @@ module.exports = {
 		var admin = req.headers.token.admin;
 		console.log('\n req.headers.token:'+req.headers.token);
 		console.log('\n req.headers.token.id:'+req.headers.token.id);
-		var sql = sql = 'select * from bloodpressure where userId = ' + req.headers.token.id;		
+		var sql = sql = 'select * from bp_record where userId = ' + req.headers.token.id;		
 		if(admin)
-		 	sql = 'select * from bloodpressure';
+		 	sql = 'select * from bp_record';
 		db.query(sql,function(err,results){
 			if(err){
 				let error = {code : 103,message : err};

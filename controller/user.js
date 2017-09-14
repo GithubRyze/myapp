@@ -52,7 +52,7 @@ module.exports = {
 	 login : function(req,res,next){
 	 	var name = req.body.name;
 	 	var password = req.body.password;
-	 	var isPhone = req.body.isPhone;
+	 	//var isPhone = req.body.isPhone;
 	 	var sql = 'select * from user where name = ' + "'" + name + "'" + ' and password = '+ "'" + password + "'";
 	 	console.log("login sql::"+sql);
 	 	db.query(sql,function(err,results){
@@ -74,7 +74,7 @@ module.exports = {
 	 			//console.log('token ::'+token); 			
 	 			res.header("token",token);
 	 			//if(isPhone !== undefined && isPhone){
-		 			var result = {code : 100 ,message : 'login success',results : results};
+		 			var result = {code : 100 ,message : 'login success',user : results};
 		 			res.status(200).end(JSON.stringify(result));
 	 			//}
 	 			//else{
@@ -102,16 +102,24 @@ module.exports = {
 	 		sex : 0,
 	 		heigh : 0,
 	 		weight : 0,
+	 		avatar : '',
 	 		age : 0
 
 	 	};
 	 	user.name = req.body.name;
+	 	user.password = req.body.password;
 	 	console.log("user.name::"+user.name);
 	 	if (typeof(user.name) == 'undefined' || user.name == null || user.name.length == 0) {
 	 		let result  = {code : 102,message:'invalid username'};
 	 		res.status(200).end(JSON.stringify(result));
 	 		return;
 	 	}
+	 	if (typeof(user.password) == 'undefined' || user.password == null || user.password.length == 0) {
+	 		let result  = {code : 102,message:'invalid password'};
+	 		res.status(200).end(JSON.stringify(result));
+	 		return;
+	 	}
+
 	 	//var sql = 'select * from `user` where `username` = "john"';
 	 	var sql = 'select * from user where name = ' + "'"+ user.name + "'";
 	 	//console.log("sql::"+sql);
@@ -123,14 +131,14 @@ module.exports = {
 	 			return;
 	 		}else{	 			
 	 			if (resluts.length == 0) {
-	 				user.password = req.body.password;
 	 				user.email = req.body.email;
 	 				user.sex = req.body.sex;
 	 				user.heigh = req.body.heigh;
 	 				user.weight = req.body.weight;
 	 				user.age = req.body.age;
-	 				var insertSql = 'insert into user (name,password,email,sex,heigh,weight,age) values ('+ "'"+user.name + "',"+ 
-	 				"'" + user.password +"',"+ "'"+user.email + "',"+ user.sex +','+user.heigh + ',' +user.weight +','+user.age+ ')';
+	 				user.avatar = req.body.avatar;
+	 				var insertSql = 'insert into user (name,password,email,sex,heigh,weight,age,avatar) values ('+ "'"+user.name + "',"+ 
+	 				"'" + user.password +"',"+ "'"+user.email + "',"+ user.sex +','+user.heigh + ',' +user.weight +',' + user.age + ',' + "'" + user.avatar + "'" + ')';
 	 				//console.log('insert sql::'+insertSql);
 	 				db.query(insertSql,function(err,results){
 	 					if(err){
@@ -145,7 +153,7 @@ module.exports = {
 	 					}
 	 				});
 	 			}else{
-	 				let exist = {code : 101,message : 'user name was already exist',user : []};
+	 				let exist = {code : 101,message : 'user name was already exist'};
 	 				res.status(200).end(JSON.stringify(exist));
 	 			}	 			
 	 		}
@@ -190,18 +198,19 @@ module.exports = {
 	updateUser :function(req,res,next){
 		var user = {
 			userId : req.body.userId,
-		 	name : name,
-		 	password : password,
-		 	email : email,
-		 	sex : sex,
-		 	heigh : heigh,
-		 	weight : weight,
-		 	age : age			
+		 	name : req.body.name,
+		 	password : req.body.password,
+		 	email : req.body.email,
+		 	sex : req.body.sex,
+		 	heigh : req.body.heigh,
+		 	weight : req.body.weight,
+		 	age : req.body.age,	
+		 	avatar : req.body.avatar	
 
 	 	}; 
 	 	var updateSql = 'update user set name = ' + "'"+user.name + "'," + 'password = ' + "'" + password + "'," 
 	 	+ 'email = ' + "'" + email + "',"+ 'sex = ' + sex + ',' + 'heigh = ' + heigh + ',' + 'weight = ' + weight + ','
-	 	+ 'age = ' + agt + 'where id = ' + user.userId;
+	 	+ 'age = ' + agt + 'where id = ' + user.userId + "'" + user.avatar + "'";
 	 	console.log('update user sql::'+updateSql);
 	 	db.query(updateSql,function(err,results){
 	 		if (err) {

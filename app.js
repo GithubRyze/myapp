@@ -48,7 +48,8 @@ app.all('*', (req, res, next) => {
 			var token  = req.headers.token;
 			console.log('decode::'+ req.url);
 			if(token === undefined){
-				res.status(200).end('please login');
+				let result = {code : 104,message : "not token,please login"};
+				res.status(200).end(JSON.stringify(result));
 				return;
 			}
 			var decode = jwt.decode(token,'secret');

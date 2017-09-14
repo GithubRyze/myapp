@@ -37,7 +37,7 @@
                 localStorage.setItem('bloodToken',xhr.getResponseHeader('token'));
                 console.log("error::::"+localStorage.getItem('bloodToken'));
                 window.location.href = 'static/index.html';
-                window.close();
+                //window.close();
             })
             .fail(function() {
                 console.log("error");

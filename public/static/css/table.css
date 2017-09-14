@@ -1,0 +1,11 @@
+.bootstrap-table .table thead tr:first-child {
+    background-color: #76cc9a !important;
+    color: #fff;
+}
+
+.jumbotron {
+    background-color: #76cc9a !important;
+}
+.jumbotron h1{
+	font-size : 48px !important;
+}
