@@ -1,6 +1,6 @@
 
 'use strict';
-
+var blood = require('./bloodrecord');
 var db = require('../db/db.js');
 
 module.exports = {
@@ -11,7 +11,8 @@ module.exports = {
 
 		var sql = 'insert into comment (commentUserID,toUserID,bloodID,commentText) values ('+ req.body.commentUserID + ',' + req.body.toUserID + ',' + 
 		req.body.bloodID + ',' + '\'' + req.body.commentText + '\'' + ')';
-		console.log('addComment Sql::'+sql);
+		//console.log('addComment Sql::'+JSON.stringify(req.body));
+		console.log('sql::'+sql);
 		db.query(sql,function(err,results){
 			if(err){
 				console.log('err::'+err);
@@ -19,11 +20,19 @@ module.exports = {
 				res.status(200).end(JSON.stringify(error));
 				return;
 			}
-			//insertId is the row number,
 			console.log('results.insertId::'+results.insertId);
 			if(typeof(results.insertId) !== undefined){
-				let result = {code : 100, message : 'add sucess' ,comment_id : results.insertId};
-				res.status(200).end(JSON.stringify(result));
+				//blood.updateRecordCommentID(results.insertId,req.body.bloodID);
+				var updateSql = 'update bloodpressure set commentID = '+ results.insertId + ' where id = ' + req.body.bloodID;
+				db.query(updateSql,function(err,cmmResult){
+			 		if (err) {
+				 		let error = {code : 103,message : err};
+				 		res.status(200).end(JSON.stringify(error));
+				 		return ;
+			 		}
+			 		let result = {code : 100, message : 'add sucess' ,comment_id : results.insertId};
+					res.status(200).end(JSON.stringify(result));
+		 		});
 			}
 
 		});
@@ -85,4 +94,4 @@ module.exports = {
 
 
 
-};
+}

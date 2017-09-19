@@ -17,7 +17,8 @@ module.exports = {
 			dbp : req.body.dbp,
 			sbp : req.body.sbp,
 			hb : req.body.hb,
-			health : req.body.health
+			health : req.body.health,
+			commentID : req.body.commentID
 		};
 		if(checkValue(blood.userId) || checkValue(blood.dbp) || checkValue(blood.sbp) || checkValue(blood.hb) || checkValue(blood.health)){
 		
@@ -27,8 +28,8 @@ module.exports = {
 			return;
 
 		}
-		var sql = 'insert into bp_record (userId,DBP,SBP,HB,health) values ('+ blood.userId + ',' + blood.dbp + ',' + 
-		blood.sbp + ',' + blood.hb + ',' + blood.health +')';
+		var sql = 'insert into bloodpressure (userId,dbp,sbp,hb,health,commentID) values ('+ blood.userId + ',' + blood.dbp + ',' + 
+		blood.sbp + ',' + blood.hb + ',' + blood.health + ',' + blood.commentID + ')';
 		console.log('add Record Sql::'+sql);
 		db.query(sql,function(err,results){
 			if(err){
@@ -50,7 +51,7 @@ module.exports = {
 	},
 	deleteRecord : function(req,res,next){
 		var blood_id = req.body.blood_id;
-		var sql = 'delete from bp_record where id = ' + blood_id;
+		var sql = 'delete from bloodpressure where id = ' + blood_id;
 		db.query(sql,function(err,results){
 			if (err) {
 		 		let error = {code : 103,message : err};
@@ -66,7 +67,7 @@ module.exports = {
 
 		var blood_id = req.query.boold_id;
 		console.log('blood_id:'+blood_id);
-		var sql = 'select * from bp_record where id = '+blood_id;
+		var sql = 'select * from bloodpressure where id = '+blood_id;
 		console.log('getRecord sql:'+sql);
 		db.query(sql,function(err,results){
 			if (err) {
@@ -88,8 +89,8 @@ module.exports = {
 			hb : req.body.hb,
 			health : req.body.health
 		};
-		var updateSql = 'update bp_record set DBP = '+ blood.dbp + ',SBP = '+ blood.sbp + ',HB = ' + blood.hb +
-		 ',health = ' + blood.health + ' where id = ' +blood.id;
+		var updateSql = 'update bloodpressure set dbp = '+ blood.dbp + ',sbp = '+ blood.sbp + ',hb = ' + blood.hb +
+		 ',health = ' + blood.health  + ',commentID = '+ blood.commentID + ' where id = ' +blood.id;
 		 console.log("update sql:"+updateSql);
 		 db.query(updateSql,function(err,results){
 		 	if (err) {
@@ -118,17 +119,56 @@ module.exports = {
 		//console.log('\n req.headers.token.id:'+req.headers.token.id);
 		//var sql = sql = 'select * from bp_record where userId = ' + req.headers.token.id;		
 		//if(admin)
-		var sql = 'select * from bloodpressure';// comment where bloodpressure.id = comment.bloodID
-		db.query(sql,function(err,results){
-			if(err){
-				let error = {code : 103,message : err};
-				res.status(200).end(JSON.stringify(error));
-				return;
+		var limit = req.query.limit || 10;
+		var offset = req.query.offset ||  10;
+		var admin = req.headers.token.admin;
+		//console.log('\n request'+req.headers['x-request-with']);
+		//if(req.headers.client === 'web'){
+			console.log('\n limit::'+limit);
+			console.log('\n offset::'+offset);
+			console.log('\n web XMLHttpRequest request');
+			let selectSql,totalSql;
+			if(admin){
+				 selectSql = 'select * from bloodpressure limit ' + (offset - 1)*limit + ',' + limit;
+				 totalSql = 'select count(id) from bloodpressure';
+			}else{
+				 selectSql = 'select * from bloodpressure limit ' + (offset - 1)*limit + ',' + limit + 'where userId = ' + req.headers.token.id;
+				 totalSql = 'select count(id) from bloodpressure where userId = ' + req.headers.token.id;
 			}
-			//results is json array, contain all columu name in table;
-			let blood = {data : results};
-			res.status(200).end(JSON.stringify(blood));
-		});
+			db.query(totalSql,function(err,results){
+				if(err){
+					let error = {code : 103,message : err};
+					res.status(200).end(JSON.stringify(error));
+					return;
+				}
+				//results is json array, contain all columu name in table;
+				if(results !== 'undefined'){
+					
+					var count = results[0]['count(id)'];
+					console.log('\n count:'+ count);
+					db.query(selectSql,function(error,rts){
+						if(error){
+							let er = {code : 103,message : error};
+							res.status(200).end(JSON.stringify(er));
+							return;
+						}
+						if(rts !== 'undefined'){
+							let r = {"total" : count,"rows" : rts};
+							if(req.headers.client === 'web'){
+								res.status(200).end(JSON.stringify(r));
+							}else{
+								ress.status(200).end(JSON.stringify(rts));
+							}
+						}
+					});
+				}
+			});
+
+		//}//else{
+			//console.log('\n app android iphone device request');
+
+		//}
+	
 
 	}
 

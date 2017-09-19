@@ -44,7 +44,7 @@ app.all('*', (req, res, next) => {
 	if (req.method == 'OPTIONS') {
 	  	res.send(200);
 	} else {	
-		/*if(apis.indexOf(req.url) !== -1 || req.url.indexOf('bp_api/bloodrecord') !== -1){
+		if(apis.indexOf(req.url) !== -1 || req.url.indexOf('bp_api/comment') !== -1 ||req.url.indexOf('bp_api/bloodrecord') !== -1){
 			var token  = req.headers.token;
 			console.log('decode::'+ req.url);
 			if(token === undefined){
@@ -56,9 +56,9 @@ app.all('*', (req, res, next) => {
 			console.log('\n \n \r decode::'+ JSON.stringify(decode));
 			req.headers.token = decode;
 			next();	
-		}else {*/
+		}else {
 			next();
-		//}
+		}
 	}
 
 });

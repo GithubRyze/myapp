@@ -35,7 +35,12 @@
             })
             .done(function(result,textStatus,xhr) {
                 localStorage.setItem('bloodToken',xhr.getResponseHeader('token'));
+                 console.log("error_______"+JSON.stringify(result));
+
                 console.log("error::::"+localStorage.getItem('bloodToken'));
+                console.log("error::::"+result.user[0].role);
+                localStorage.setItem('admin',result.user[0].role);
+                localStorage.setItem('userID',result.user[0].id);
                 window.location.href = 'static/index.html';
                 //window.close();
             })

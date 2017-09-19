@@ -37,7 +37,7 @@ var MIME_TYPE = {
 };
 var index = function(req,res,next){
 
-			fs.readFile('./public/static/index.html', null, function(err,data){
+			fs.readFile('./public/static/index2.html', null, function(err,data){
 			if (err) {
 				console.log('err:'+err);
 				res.writeHead(404,{'Content-Type':'text/plain'});

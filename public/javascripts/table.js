@@ -2,25 +2,29 @@
                 var curRow = {};
                     $('#boold_record_table').bootstrapTable({
                     url:"http://localhost:8001/bp_api/bloodrecord/allRecord",//请求数据url
-                    /*queryParams: function (params) {
+                    pageNumber : 1,
+                    pageList: 10,//分页步进值
+                    pageSize: 10, 
+                    queryParams: function (params) {
+                        console.log("params ::"+JSON.stringify(params));
                         return {
-                            offset: params.offset,  //页码
-                            limit: params.limit,   //页面大小
-                            search : params.search, //搜索
-                            order : params.order, //排序
-                            ordername : params.sort, //排序
+
+                            offset: params.pageNumber,  //页码
+                            limit: params.pageSize,   //页面大小
+                            //search : params.search, //搜索
+                            //order : params.order, //排序
+                            //ordername : params.sort, //排序
                         };
-                    },*/
+                    },
+                    queryParamsType : 'limit',
                     showHeader : true,
                     showColumns : true,
                     showRefresh : true,
                     pagination: true,//分页
-                    sidePagination : 'client',//服务器端分页
-                    //pageNumber : 1,
-                    //pageList: [5, 10, 20, 50],//分页步进值
+                    sidePagination : 'server',//服务器端分页 会不会分页后无法编辑？？             
                     search: true,//显示搜索框
                     clickToSelect: true,
-                    ajaxOptions : {headers: { "token": localStorage.getItem('bloodToken')}};
+                    ajaxOptions : {headers: { "token": localStorage.getItem('bloodToken'),"client":'web'}},
                     //表格的列
                     columns: [
                         {
@@ -29,6 +33,7 @@
                             visible: true,//false表示不显示
                            // sortable: false,//启用排序
                             width : '20%',
+                            align: 'center',
                         },
                         {
                             field: 'sbp',//
@@ -37,6 +42,7 @@
                            // sortable: false,//启用排序
                             width : '10%',
                             editable:true,
+                            align: 'center',
                         },
                         {
                             field: 'dbp',//域值
@@ -45,6 +51,7 @@
                            // sortable: false,//启用排序
                             width : '10%',
                             editable:true,
+                            align: 'center',
                         },
                          {
                             field: 'hb',//域值
@@ -53,6 +60,7 @@
                            // sortable: false,//启用排序
                             width : '10%',
                             editable:true,
+                            align: 'center',
                         },
                         {
                             field: 'id',//域值
@@ -61,6 +69,7 @@
                            // sortable: false,//启用排序
                             width : '35%',
                             editable:true,
+                            align: 'center',
                         },
                         {
                             field: 'comment',//域值
@@ -68,13 +77,17 @@
                             visible: true,//false表示不显示
                             //sortable: false,//启用排序
                             width : '50%',
-                            editable:false,
+                            editable:true,
+                            align: 'center',
                             formatter : function (value, row, index) {
                                 //return "<a href=\"#\" id=\"pencil\"><i class=\"icon-pencil\" style=\"padding-right: 5px\"></i>"[edit]"</a>"
                                 if(row.commentID === null)
                                     value = 'comment';
                                 else{
                                     $.ajax({
+                                        beforeSend : function(xhr){
+                                            xhr.setRequestHeader("token",localStorage.getItem('bloodToken'));
+                                         },
                                         type : 'POST',
                                         url : 'http://localhost:8001/bp_api/comment/getComment',
                                         async:false,//异步false 可能会堵塞UI
@@ -84,7 +97,7 @@
                                         success : function(data,textStatus,jqXHR){
                                                //console.log('data11111111::'+data);
                                                //console.log('row::'+JSON.stringify(data));
-                                              // console.log(' data.commentText::'+ data.commentText);
+                                               //console.log(' data.commentText::'+ data.commentText);
                                                value = data.commentText;
 
                                         },
@@ -93,13 +106,21 @@
                                         }
                                     });
                                 }
-                               return "<a href=\"#\" name=\"UserName\" data-type=\"textarea\" data-pk=\""+row.Id+"\" data-title=\"enter comment\">" + value + "</a>";
+
+                                if(localStorage.getItem('admin') == 1){
+                                    console.log('adminadmin::'+localStorage.getItem('admin'));
+                                     return "<a href=\"#\" name=\"UserName\" data-type=\"textarea\" data-pk=\""+row.Id+"\" data-title=\"enter comment\">" + value + "</a>";
+                                 }else{
+
+                                 return value;
+                             }
                             }
                         }
                     ],
 
             onClickRow: function (row, $element) {
                 curRow = row;
+                
                 console.log('row::'+JSON.stringify(row));
                 console.log('$element::'+JSON.stringify($element));
             },
@@ -125,16 +146,20 @@
                         }
                         else {
                             requestUrl = 'http://localhost:8001/bp_api/comment/addComment'
-                            comment = {"commentText" : params.value,"commentUserID" : 2,"toUserID" : curRow.userId,"bloodID" : curRow.id};
+                            comment = {"commentText" : params.value,"commentUserID" : localStorage.getItem('userID'),"toUserID" : curRow.userId,"bloodID" : curRow.id};
 
                         }
                         $.ajax({
+                            beforeSend : function(xhr){
+                                xhr.setRequestHeader("token",localStorage.getItem('bloodToken'));
+                            },
                             type: 'POST',
                             url: requestUrl,
                             data: comment,
                             dataType: 'JSON',
                             success: function (data, textStatus, jqXHR){
-                                
+                                console.log('row::'+JSON.stringify(data));
+                                curRow.commentID = data.comment_id;
                             },
                             error: function () {
                              //alert("error");
