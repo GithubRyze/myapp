@@ -5,20 +5,26 @@
         <meta charset="UTF-8">
         <title>bootstrap</title>
         <link rel="stylesheet" type="text/css" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="/lib/bootstrap-table/dist/bootstrap-table.css" >
+        <link rel="stylesheet" type="text/css" href="/static/css/table.css" >
+        <link href="/lib/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+
+
         <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
         <script src="/lib/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" src="/lib/bootstrap-table/dist/bootstrap-table.js" ></script>
+        <script src="/lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript" charset="utf-8"></script>
         <!-- <script type="text/javascript" src="/lib/bootstrap-table/dist/bootstrap-table-local-all.js"></script> -->
         <script type="text/javascript" src="/lib/bootstrap-table/src/locale/bootstrap-table-zh-CN.js"></script>
-        <link rel="stylesheet" type="text/css" href="/lib/bootstrap-table/dist/bootstrap-table.css" >
-        <link rel="stylesheet" type="text/css" href="/static/css/table.css" >
+        <script src="/lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript" charset="utf-8"></script>
+
+         <link href="/lib/x-editable/src/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.css" rel="stylesheet">  
+        <script src="/lib/x-editable/src/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/wysihtml5-0.3.0.min.js"></script>  
+        <script src="/lib/x-editable/src/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.min.js"></script>
+        <script src="/lib/x-editable/src/inputs-ext/wysihtml5/wysihtml5.js"></script>
+
     </head>
-    <script type="text/javascript" charset="utf-8" src = "/javascripts/login.js">
-       
-
-        
-    </script>   
-
+   
     <body>
         <div class="container-fluid">
             <div class="row">
@@ -27,7 +33,7 @@
                 </div>
             </div>
             <div class="container">
-                <table id="boold_record_table" data-toggle="table" data-url="http://localhost:8001/bp_api/bloodrecord/allRecord" data-method="get"
+                <table id="boold_record_table" ></table><!-- data-toggle="table" data-url="http://localhost:8001/bp_api/bloodrecord/allRecord" data-method="get"
                     
                         data-toolbar="#toolbar"
                         data-pagination="true"
@@ -48,11 +54,12 @@
                             <th data-field="health">User Health</th>
                             <th data-field="time">Time</th>
                         </tr>
-                    </thead>
-                </table> 
+                    </thead> 
+                </table> -->
             </div>
         </div>
-        
+                 <script type="text/javascript" charset="utf-8" src = "/javascripts/table.js"></script> 
+
     </body>
 
 </html>

@@ -113,12 +113,12 @@ module.exports = {
 			return;
 		}*/
 		//var sql = 'select * from bloodpressure limit ' + (page - 1)*10 + ',' + 10;
-		var admin = req.headers.token.admin;
-		console.log('\n req.headers.token:'+req.headers.token);
-		console.log('\n req.headers.token.id:'+req.headers.token.id);
-		var sql = sql = 'select * from bp_record where userId = ' + req.headers.token.id;		
-		if(admin)
-		 	sql = 'select * from bp_record';
+		//var admin = req.headers.token.admin;
+		//console.log('\n req.headers.token:'+req.headers.token);
+		//console.log('\n req.headers.token.id:'+req.headers.token.id);
+		//var sql = sql = 'select * from bp_record where userId = ' + req.headers.token.id;		
+		//if(admin)
+		var sql = 'select * from bloodpressure';// comment where bloodpressure.id = comment.bloodID
 		db.query(sql,function(err,results){
 			if(err){
 				let error = {code : 103,message : err};

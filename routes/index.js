@@ -1,6 +1,7 @@
 'use strict';
 var user = require('./user.js');
 var booldrecord = require('./bloodrecord.js');	
+var comment = require('./comment.js')
 var fs = require('fs');
 var path = require('path');
 
@@ -8,6 +9,7 @@ module.exports = router =>{
 
 	router.use('/bp_api/user',user);
 	router.use('/bp_api/bloodrecord',booldrecord);
+	router.use('/bp_api/comment',comment);
 	router.get('/index',function(req,res,next){
 		 index(req,res,next);
 	});
@@ -35,7 +37,7 @@ var MIME_TYPE = {
 };
 var index = function(req,res,next){
 
-			fs.readFile('./public/static/index2.html', null, function(err,data){
+			fs.readFile('./public/static/index.html', null, function(err,data){
 			if (err) {
 				console.log('err:'+err);
 				res.writeHead(404,{'Content-Type':'text/plain'});

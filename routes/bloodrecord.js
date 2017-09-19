@@ -1,3 +1,4 @@
+'use strict';
 var BloodRecord = require('../controller/bloodrecord');
 var express = require('express');
 var router = express.Router();

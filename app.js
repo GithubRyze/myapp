@@ -38,13 +38,13 @@ app.all('*', (req, res, next) => {
 	res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("Access-Control-Allow-Credentials", true); //可以带cookies
 	res.header("X-Powered-By", '3.2.1');
-	res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-	res.header("Pragma", "no-cache"); // HTTP 1.0.
-	res.header("Expires", "0");
+	//res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+	//res.header("Pragma", "no-cache"); // HTTP 1.0.
+	//res.header("Expires", "0");
 	if (req.method == 'OPTIONS') {
 	  	res.send(200);
 	} else {	
-		if(apis.indexOf(req.url) !== -1 || req.url.indexOf('bp_api/bloodrecord') !== -1){
+		/*if(apis.indexOf(req.url) !== -1 || req.url.indexOf('bp_api/bloodrecord') !== -1){
 			var token  = req.headers.token;
 			console.log('decode::'+ req.url);
 			if(token === undefined){
@@ -56,9 +56,9 @@ app.all('*', (req, res, next) => {
 			console.log('\n \n \r decode::'+ JSON.stringify(decode));
 			req.headers.token = decode;
 			next();	
-		}else {
+		}else {*/
 			next();
-		}
+		//}
 	}
 
 });
