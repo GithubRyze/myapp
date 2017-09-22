@@ -24,9 +24,9 @@ module.exports = {
 			if(typeof(results.insertId) !== undefined){
 				//blood.updateRecordCommentID(results.insertId,req.body.bloodID);
 				var updateSql = 'update bloodpressure set commentID = '+ results.insertId + ' where id = ' + req.body.bloodID;
-				db.query(updateSql,function(err,cmmResult){
-			 		if (err) {
-				 		let error = {code : 103,message : err};
+				db.query(updateSql,function(er,cmmResult){
+			 		if (er) {
+				 		let error = {code : 103,message : er};
 				 		res.status(200).end(JSON.stringify(error));
 				 		return ;
 			 		}

@@ -64,11 +64,12 @@ module.exports = {
 	 		}
 	 		//console.log("login sql::"+JSON.stringify(results));
 	 		if(results.length !== 0){
-	 			let isDoctor = results[0].role == 0 ? false : true;
+	 			let isAdmin = results[0].role == 0 ? false : true;
+	 			console.log('role  ::'+results[0].role);
 	 			var payload = {
 	 				id : results[0].id,
 	 				name : results[0].name,
-	 				admin : isDoctor
+	 				admin : isAdmin
 	 			};
 	 			var secret = 'secret';
 	 			var token = jwt.encode(payload, secret);
@@ -139,7 +140,7 @@ module.exports = {
 	 				user.weight = req.body.weight;
 	 				user.age = req.body.age;
 	 				user.avatar = req.body.avatar;
-	 				user.role = req.body.role;
+	 				user.role = req.body.role || 0;
 	 				var insertSql = 'insert into user (name,password,email,sex,heigh,weight,age,avatar,role) values ('+ "'"+user.name + "',"+ 
 	 				"'" + user.password +"',"+ "'"+user.email + "',"+ user.sex +','+user.heigh + ',' +user.weight +',' + user.age + ',' + "'" + user.avatar + "'" +','+user.role+ ')';
 	 				//console.log('insert sql::'+insertSql);
@@ -165,7 +166,9 @@ module.exports = {
 	},
 	//get all user
 	getAllUser : function(req,res,next){
-		let sql = 'select * from user';
+		
+		var admin = req.headers.token.admin;
+		let	sql = 'select * from user';
 		db.query(sql,function(err,results){
 			if (err) {
 				let error = {code : 103,message : err};
@@ -180,7 +183,20 @@ module.exports = {
 
 	//get user
 	getUser : function(req,res,next){
+		let sql = 'select * from user where id = ' + req.query.userId;
+		console.log('get user id::'+req.query.userId);
+		db.query(sql,function(err,result){
+			if (err) {
+				let error = {code : 103,message : err};
+	 			res.status(200),(JSON.stringify(error));
+				return;
+			}
+			if(result !== 'undefined'){
+				let u = {user : result};
+			    res.status(200).end(JSON.stringify(u));
+			}
 
+		});
 		
 	},
 	//delete user
@@ -213,7 +229,7 @@ module.exports = {
 	 	}; 
 	 	var updateSql = 'update user set name = ' + "'"+user.name + "'," + 'password = ' + "'" + user.password + "'," 
 	 	+ 'email = ' + "'" + user.email + "',"+ 'sex = ' + user.sex + ',' + 'heigh = ' + user.heigh + ',' + 'weight = ' + user.weight + ','
-	 	+ 'age = ' + user.agt + 'where id = ' + user.userId + "'" + user.avatar + "'" + 'role = ' + user.role;
+	 	+ 'age = ' + user.age + 'where id = ' + user.userId + "'" + user.avatar + "'" + 'role = ' + user.role;
 	 	console.log('update user sql::'+updateSql);
 	 	db.query(updateSql,function(err,results){
 	 		if (err) {

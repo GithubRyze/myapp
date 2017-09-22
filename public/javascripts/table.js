@@ -1,10 +1,65 @@
 
-                var curRow = {};
+                    var curRow = {};
+
+                    $("#btn_select").empty();
+                    var selectSql;
+                    if(localStorage.getItem('admin') == 1){
+                        selectSql = 'http://localhost:8001/bp_api/user/getAllUser';
+                    }else{
+                        selectSql = 'http://localhost:8001/bp_api/user/getUser';
+                    }               
+                     $.ajax({
+                                beforeSend : function(xhr){
+                                    xhr.setRequestHeader("token",localStorage.getItem('bloodToken'));
+                                },
+                                type: 'get',
+                                url: selectSql,
+                                data: {"userId" : localStorage.getItem('userID')},
+                                dataType: 'JSON',
+                                success: function (data, textStatus, jqXHR){
+                                    console.log('row::'+JSON.stringify(data))
+                                    var option = document.createElement("OPTION");
+                                    $("#btn_select").append("<option value='"+0+"'>"+"All</option>");
+                                    if(data.user.length != 0){
+                                        for(var j = 0; j < data.user.length;j++){
+                                            var option = document.createElement("OPTION");
+                                            $("#btn_select").append("<option value='"+data.user[j].id+"'>"+data.user[j].name+"</option>");
+                                        }   
+                                    }
+                                },
+                                error: function () {
+                             }
+                    });  
+                    
+
+                    $("#btn_select").change(function(){
+
+                        //console.log('btn_select value:' + $("#btn_select").val());
+                        var id = $("#btn_select").val();
+                        var link;
+                        //console.log('btn_select:' + $("#btn_select").find("option:selected").text());
+                        if(id == 0){
+                            link = 'http://localhost:8001/bp_api/bloodrecord/allRecord';
+                        }
+                        else{
+                            link = 'http://localhost:8001/bp_api/bloodrecord/queryUserRecord';
+                        }
+                        var params = {
+                            url : link,
+                            silent : true,
+                            query : {
+                                userId : id,
+                            }
+                        };
+                         $("#boold_record_table").bootstrapTable('refresh', params);
+                    });
+
                     $('#boold_record_table').bootstrapTable({
                     url:"http://localhost:8001/bp_api/bloodrecord/allRecord",//请求数据url
                     pageNumber : 1,
                     pageList: 10,//分页步进值
                     pageSize: 10, 
+                    toolbar : '#toolbar',
                     queryParams: function (params) {
                         console.log("params ::"+JSON.stringify(params));
                         return {
@@ -22,7 +77,7 @@
                     showRefresh : true,
                     pagination: true,//分页
                     sidePagination : 'server',//服务器端分页 会不会分页后无法编辑？？             
-                    search: true,//显示搜索框
+                    search: false,//显示搜索框
                     clickToSelect: true,
                     ajaxOptions : {headers: { "token": localStorage.getItem('bloodToken'),"client":'web'}},
                     //表格的列
@@ -125,7 +180,10 @@
                 console.log('$element::'+JSON.stringify($element));
             },
 
-            onLoadSuccess: function (aa, bb, cc) {
+          
+            onLoadSuccess: function (data) {
+                 
+                            
                 $("#boold_record_table a").editable({
                     type: 'textarea',
                     rows : 7,

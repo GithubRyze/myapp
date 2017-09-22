@@ -24,6 +24,14 @@
         <script src="/lib/x-editable/src/inputs-ext/wysihtml5/wysihtml5.js"></script>
 
     </head>
+    <style type="text/css" media="screen">
+
+        select {
+            width: 90px;
+            height: 30px;
+        }
+        
+    </style>
    
     <body>
         <div class="container-fluid">
@@ -33,6 +41,15 @@
                 </div>
             </div>
             <div class="container">
+
+                 <div class="panel-body" style="padding-bottom:0px;">
+                    <div id="toolbar" class="btn-group">
+                    <select id="btn_select" type="select" >
+                    </select>
+                </div>
+           <div class="box">
+            <!-- /.box-header -->
+            <div class="box-body">
                 <table id="boold_record_table" ></table><!-- data-toggle="table" data-url="http://localhost:8001/bp_api/bloodrecord/allRecord" data-method="get"
                     
                         data-toolbar="#toolbar"

@@ -8,7 +8,7 @@ router.get('/getRecord',BloodRecord.getRecord);
 router.post('/addRecord',BloodRecord.addRecord);
 router.post('/deleteRecord',BloodRecord.deleteRecord);
 router.post('/updateRecord',BloodRecord.updateRecord);
-router.get('/allRecord',BloodRecord.getAllRecord);
-
+router.get('/allRecord',BloodRecord.getAllUserRecord);
+router.get('/queryUserRecord',BloodRecord.queryUserRecord)
 
 module.exports = router;
