@@ -168,7 +168,7 @@ module.exports = {
 	getAllUser : function(req,res,next){
 		
 		var admin = req.headers.token.admin;
-		let	sql = 'select * from user';
+		let	sql = 'select (name,sex,age,heigh,weight) from user';
 		db.query(sql,function(err,results){
 			if (err) {
 				let error = {code : 103,message : err};
@@ -183,7 +183,7 @@ module.exports = {
 
 	//get user
 	getUser : function(req,res,next){
-		let sql = 'select * from user where id = ' + req.query.userId;
+		let sql = 'select (name,sex,age,heigh,weight) from user where id = ' + req.query.userId;
 		console.log('get user id::'+req.query.userId);
 		db.query(sql,function(err,result){
 			if (err) {
@@ -229,7 +229,7 @@ module.exports = {
 	 	}; 
 	 	var updateSql = 'update user set name = ' + "'"+user.name + "'," + 'password = ' + "'" + user.password + "'," 
 	 	+ 'email = ' + "'" + user.email + "',"+ 'sex = ' + user.sex + ',' + 'heigh = ' + user.heigh + ',' + 'weight = ' + user.weight + ','
-	 	+ 'age = ' + user.age + 'where id = ' + user.userId + "'" + user.avatar + "'" + 'role = ' + user.role;
+	 	+ 'age = ' + user.age  + "'" + user.avatar + "'" + 'role = ' + user.role + ' where id = ' + user.userId;
 	 	console.log('update user sql::'+updateSql);
 	 	db.query(updateSql,function(err,results){
 	 		if (err) {
