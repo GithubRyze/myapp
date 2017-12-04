@@ -16,6 +16,10 @@
     "mysql": "^2.14.1",
     "jwt-simple" : "^0.5.1",
     "x-editable" : "^1.5.1",
-    "sequelize" : "^4.8.4"
+    "sequelize" : "^4.22.0",
+    "mosca" : "^2.5.1",
+    "mysql2" : "^1.4.2",
+    "jpush-sdk": "^v3.4.3",
+    "redis": "^2.8.0"
   }
 }

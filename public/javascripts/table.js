@@ -17,8 +17,9 @@
                                 data: {"userId" : localStorage.getItem('userID')},
                                 dataType: 'JSON',
                                 success: function (data, textStatus, jqXHR){
-                                    console.log('row::'+JSON.stringify(data))
+                                    //console.log('row::'+JSON.stringify(data))
                                     var option = document.createElement("OPTION");
+                                   // $("#btn_select").append("<option value='"+-1+"'>"+"All</option>");
                                     $("#btn_select").append("<option value='"+0+"'>"+"All</option>");
                                     if(data.user.length != 0){
                                         for(var j = 0; j < data.user.length;j++){
@@ -34,7 +35,7 @@
 
                     $("#btn_select").change(function(){
 
-                        //console.log('btn_select value:' + $("#btn_select").val());
+                        console.log('btn_select value:' + $("#btn_select").val());
                         var id = $("#btn_select").val();
                         var link;
                         //console.log('btn_select:' + $("#btn_select").find("option:selected").text());
@@ -89,6 +90,10 @@
                            // sortable: false,//启用排序
                             width : '20%',
                             align: 'center',
+                            formatter : function(value,row,index){
+                                var date = new Date('2017-10-18T03:07:39.000Z');
+                                return date.toLocaleString();
+                            }
                         },
                         {
                             field: 'sbp',//
@@ -98,6 +103,12 @@
                             width : '10%',
                             editable:true,
                             align: 'center',
+                            formatter : function(value,row,index){
+                                if(value > 140 || value < 90){
+                                    return '<span style="color:#ee0b0b">'+value+'</span>'
+                                }
+                                return value;
+                            },
                         },
                         {
                             field: 'dbp',//域值
@@ -107,6 +118,12 @@
                             width : '10%',
                             editable:true,
                             align: 'center',
+                            formatter : function(value,row,index){
+                                if(value > 90 || value < 60){
+                                    return '<span style="color:#ee0b0b">'+value+'</span>'
+                                }
+                                return value;
+                            },
                         },
                          {
                             field: 'hb',//域值
@@ -115,7 +132,19 @@
                            // sortable: false,//启用排序
                             width : '10%',
                             editable:true,
-                            align: 'center',
+                            align: 'center',                        
+                            formatter : function(value,row,index){
+                                var a ='';
+                                if(value < 60 || value > 100){
+                                    return '<span style="color:#ee0b0b">'+'value'+'</span>'
+                                    //a = '<font color="red">' + value + '</font>';
+                                }else{
+                                    a = '<span>'+value+'</span>';
+                                }
+
+                                console.log('hb value::'+a);
+                                return a;
+                            },
                         },
                         {
                             field: 'id',//域值

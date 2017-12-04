@@ -1,246 +1,130 @@
 'use strict';
-
-var db = require('../db/db.js');
-var fs = require('fs');
-var path = require('path');
-var jwt = require('jwt-simple');
-	//添加MIME类型
-var MIME_TYPE = {
-    "css": "text/css",
-    "gif": "image/gif",
-    "html": "text/html",
-    "ico": "image/x-icon",
-    "jpeg": "image/jpeg",
-    "jpg": "image/jpeg",
-    "js": "text/javascript",
-    "json": "application/json",
-    "pdf": "application/pdf",
-    "png": "image/png",
-    "svg": "image/svg+xml",
-    "swf": "application/x-shockwave-flash",
-    "tiff": "image/tiff",
-    "txt": "text/plain",
-    "wav": "audio/x-wav",
-    "wma": "audio/x-ms-wma",
-    "wmv": "video/x-ms-wmv",
-    "xml": "text/xml"
-};
-
-function renderHtml(req,res){
-
-	fs.readFile('./public/static/index.html', null, function(err,data){
-			if (err) {
-				console.log('err:'+err);
-				res.writeHead(404,{'Content-Type':'text/plain'});
-				res.end('404 not found');
-				return;
-			}
-			var ext = path.extname('./public/static/index.html');
-			ext = ext ? ext.slice(1):'unkown';
-			console.log('ext::'+ext);
-			var content_type = MIME_TYPE[ext] || 'text/plain';
-			res.writeHead(200,{'Content-Type':content_type});
-			res.end(data.toString());
-		});
-
-}
-
+const User = require('../model/user');
+const JWT = require('jwt-simple');
 module.exports = {
-	
-	
-	//user login
-	 login : function(req,res,next){
-	 	var name = req.body.name;
-	 	var password = req.body.password;
-	 	//var isPhone = req.body.isPhone;
-	 	var sql = 'select * from user where name = ' + "'" + name + "'" + ' and password = '+ "'" + password + "'";
-	 	console.log("login sql::"+sql);
-	 	db.query(sql,function(err,results){
-	 		if(err){
-	 			let error = {code : 103,message : err};
-	 			res.status(200).end(JSON.stringify(error));
-	 			//console.log("error::"+err);
-	 			return;
-	 		}
-	 		//console.log("login sql::"+JSON.stringify(results));
-	 		if(results.length !== 0){
-	 			let isAdmin = results[0].role == 0 ? false : true;
-	 			console.log('role  ::'+results[0].role);
-	 			var payload = {
-	 				id : results[0].id,
-	 				name : results[0].name,
-	 				admin : isAdmin
-	 			};
-	 			var secret = 'secret';
-	 			var token = jwt.encode(payload, secret);
-	 			//console.log('token ::'+token); 			
-	 			res.header("token",token);
-	 			//if(isPhone !== undefined && isPhone){
-		 			var result = {code : 100 ,message : 'login success',user : results};
-		 			res.status(200).end(JSON.stringify(result));
-	 			//}
-	 			//else{
-	 				//renderHtml(req,res);
-	 			//}
-	 		}else{
-	 			var result = {code : 105,message : 'login failed,not found user'};
-	 			res.status(200).end(JSON.stringify(result));
-	 		}
-
-	 	});
-	},
-
-	//user sigonout
-	signout : function(req,res,next){
-
-	},
-	//user register
-	register : function(req,res,next){
-		
-	 	var user = {
-	 		name : '',
-	 		password : '',
-	 		email : '',
-	 		sex : 0,
-	 		heigh : 0,
-	 		weight : 0,
-	 		avatar : '',
-	 		age : 0,
-	 		role : 0 // 0 is common person, 1 is doctor,
-
-	 	};
-	 	user.name = req.body.name;
-	 	user.password = req.body.password;
-	 	console.log("user.name::"+user.name);
-	 	if (typeof(user.name) == 'undefined' || user.name == null || user.name.length == 0) {
-	 		let result  = {code : 102,message:'invalid username'};
-	 		res.status(200).end(JSON.stringify(result));
-	 		return;
-	 	}
-	 	if (typeof(user.password) == 'undefined' || user.password == null || user.password.length == 0) {
-	 		let result  = {code : 102,message:'invalid password'};
-	 		res.status(200).end(JSON.stringify(result));
-	 		return;
-	 	}
-
-	 	//var sql = 'select * from `user` where `username` = "john"';
-	 	var sql = 'select * from user where name = ' + "'"+ user.name + "'";
-	 	//console.log("sql::"+sql);
-	 	db.query(sql,function(err,resluts){
-	 		if(err){
-	 			let error = {code : 103,message : err};
-	 			res.status(200).end(JSON.stringify(error));
-	 			//console.log("error::"+err);
-	 			return;
-	 		}else{	 			
-	 			if (resluts.length == 0) {
-	 				user.email = req.body.email;
-	 				user.sex = req.body.sex;
-	 				user.heigh = req.body.heigh;
-	 				user.weight = req.body.weight;
-	 				user.age = req.body.age;
-	 				user.avatar = req.body.avatar;
-	 				user.role = req.body.role || 0;
-	 				var insertSql = 'insert into user (name,password,email,sex,heigh,weight,age,avatar,role) values ('+ "'"+user.name + "',"+ 
-	 				"'" + user.password +"',"+ "'"+user.email + "',"+ user.sex +','+user.heigh + ',' +user.weight +',' + user.age + ',' + "'" + user.avatar + "'" +','+user.role+ ')';
-	 				//console.log('insert sql::'+insertSql);
-	 				db.query(insertSql,function(err,results){
-	 					if(err){
-	 						let error = {code : 103,message : err};
-	 						res.status(200).end(JSON.stringify(error));
-	 						return;
-	 					}		 					
-	 					//console.log('results.insertId::'+results.insertId );
-	 					if(typeof(results.insertId) !== undefined){
-		 					let register = {code : 100,message : 'register success',user_id : results.insertId};
-		 					res.status(200).end(JSON.stringify(register));
-	 					}
-	 				});
-	 			}else{
-	 				let exist = {code : 101,message : 'user name was already exist'};
-	 				res.status(200).end(JSON.stringify(exist));
-	 			}	 			
-	 		}
-	 	});
-
-	},
-	//get all user
-	getAllUser : function(req,res,next){
-		
-		var admin = req.headers.token.admin;
-		let	sql = 'select (name,sex,age,heigh,weight) from user';
-		db.query(sql,function(err,results){
-			if (err) {
-				let error = {code : 103,message : err};
-	 			res.status(200),(JSON.stringify(error));
+	login: function (req, res, next) {
+		var name = req.body.name;
+		var password = req.body.password;
+		User.findOne({ where: { name: name, password: password } }).then(user => {
+			if (user === null) {
+				const result = {
+					message: 'username or password is wrong',
+					user: null
+				}
+				res.status(200).end(JSON.stringify(result));
 				return;
 			}
-			let u = {user : results};
-			res.status(200).end(JSON.stringify(u));
+			let isAdmin = user.admin;
+			var payload = {
+				id: user.id,
+				name: user.name,
+				admin: isAdmin
+			};
+			var secret = 'secret';
+			var token = JWT.encode(payload, secret);
+			res.header("token", token);
+			var result = {
+				message: 'login success',
+				user: user
+			};
+			res.status(200).end(JSON.stringify(result));
+		}, fail => {
+			const result = {
+				message: 'server internal error',
+			};
+			res.status(500).end(JSON.stringify(result));
+		});
+	},
+
+	register: function (req, res, next) {
+		const user = {
+			name: req.body.name,
+			password: req.body.password,
+			email: req.body.email,
+			sex: req.body.sex,
+			height: req.body.height,
+			weight: req.body.weight,
+			age: req.body.age,
+			admin: req.body.admin,
+			avatar: req.body.avatar,
+			//phoneNumber : req.body.phone
+		}
+		User.findOrCreate({ where: user }).catch(err => {
+			console.log('err:' + err);
+			res.status(200).end('Username is exist');
+			return;
+		}).spread((user, created) => {
+			//console.log('user:'+JSON.stringify(user));
+			//console.log('created:'+JSON.stringify(created));
+			if (created) {
+				const result = {
+					message: 'Register success',
+					user: user
+				}
+				res.status(200).end(JSON.stringify(result));
+				return;
+			}
+			res.status(200).end('User register failed');
+		}).catch(err => {
+			res.status(200).end('User register failed');
+		});
+	},
+
+	getAllUser: function (req, res, next) {
+		User.findAll().then(users => {
+			res.status(200).end(JSON.stringify({
+				message: 'success',
+				users: users
+			}));
 		})
 	},
 
-
-	//get user
-	getUser : function(req,res,next){
-		let sql = 'select (name,sex,age,heigh,weight) from user where id = ' + req.query.userId;
-		console.log('get user id::'+req.query.userId);
-		db.query(sql,function(err,result){
-			if (err) {
-				let error = {code : 103,message : err};
-	 			res.status(200),(JSON.stringify(error));
+	getUser: function (req, res, next) {
+		const userID = req.query.userId;
+		User.findById(userID).then(user => {
+			if (user) {
+				res.status(200).end(JSON.stringify({
+					message: 'success',
+					user: user
+				}));
 				return;
 			}
-			if(result !== 'undefined'){
-				let u = {user : result};
-			    res.status(200).end(JSON.stringify(u));
-			}
-
+			res.status(200).end('can not find user');
+		}, fail => {
+			res.status(200).end('can not find user');
+		}).catch(err => {
+			res.status(500).end('server internal error');
 		});
-		
 	},
-	//delete user
+
 	deleteUser : function(req,res,next){
-		var deleteID = req.body.userId;
-		var sql = 'delete from user where id = ' + deleteID;
-		db.query(sql,function(err,results){
-			if (err) {
-				let error = {code : 103,message : err};
-	 			res.status(200),(JSON.stringify(error));
-				return;
-			}
-			console.log("delete user affectedRows:"+results.affectedRows);
-			res.status(200).end('delete success');
+		const userID = req.body.userId;
+		User.destroy({where : {id : userID}}).then(msg => {
+			console.log('user:'+JSON.stringify(user));
+			if(msg)
+				res.status(500).end('delete user success');
+			else
+				res.status(500).end('UserId not exist');
+		},fail => {
+			res.status(500).end('delete user failed');
 		});
 	},
-	//update user
-	updateUser :function(req,res,next){
-		var user = {
-			userId : req.body.userId,
-		 	name : req.body.name,
-		 	password : req.body.password,
-		 	email : req.body.email,
-		 	sex : req.body.sex,
-		 	heigh : req.body.heigh,
-		 	weight : req.body.weight,
-		 	age : req.body.age,	
-		 	avatar : req.body.avatar	
 
-	 	}; 
-	 	var updateSql = 'update user set name = ' + "'"+user.name + "'," + 'password = ' + "'" + user.password + "'," 
-	 	+ 'email = ' + "'" + user.email + "',"+ 'sex = ' + user.sex + ',' + 'heigh = ' + user.heigh + ',' + 'weight = ' + user.weight + ','
-	 	+ 'age = ' + user.age  + "'" + user.avatar + "'" + 'role = ' + user.role + ' where id = ' + user.userId;
-	 	console.log('update user sql::'+updateSql);
-	 	db.query(updateSql,function(err,results){
-	 		if (err) {
-				let error = {code : 103,message : err};
-	 			res.status(200),(JSON.stringify(error));
-				return;
-			}
-			console.log("update user affectedRows:"+results.affectedRows);
-			res.status(200).end('update success');
-	 	});
+	updateUser: function(req,res,next){
+		const user = {
+			name: req.body.name,
+			password: req.body.password,
+			email: req.body.email,
+			sex: req.body.sex,
+			height: req.body.height,
+			weight: req.body.weight,
+			age: req.body.age,
+			admin: req.body.admin,
+			avatar: req.body.avatar,
+			//phoneNumber : req.body.phone
+		}
+		User.update({where : user}).then(() => {
 
+		})
 	}
-
 };

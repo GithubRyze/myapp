@@ -1,192 +1,94 @@
 'use strict';
+const BloodRecord = require('../model/bloodRecord');
+module.exports = {
+    addBloodRecord: function (req, res, next) {
+        const bloodRecord = {
+            userId: req.body.userId,
+            commentId: req.body.commentId,
+            dbp: req.body.dbp,
+            sbp: req.body.sbp,
+            hb: req.body.hb,
+            healthValue: req.body.healthValue
+        }
+        BloodRecord.create({ where: bloodRecord }).then(bloodRecord => {
+            if (bloodRecord) {
+                const result = {
+                    message: 'success',
+                    bloodRecord: bloodRecord
+                }
+                res.status(200).end(JSON.stringify(result));
+            } else {
+                res.status(200).end('failed');
+            }
+        });
+    },
 
-var db = require('../db/db.js');
-function checkValue(value){
+    deleteBloodRecord: function (req, res, next) {
+        const id = req.body.id;
+        BloodRecord.destroy({ where: { id: id } }).then(msg => {
+            //console.log('user:'+JSON.stringify(user));
+            if (msg)
+                res.status(500).end('delete BloodRecord success');
+            else
+                res.status(500).end('BloodRecord not exist');
+        }, fail => {
+            res.status(500).end('delete BloodRecord failed');
+        });
+    },
 
-	if (value === "" || value === 0 || value === "0" || value === null || value === false || typeof value === 'undefined') {  
-        return true;  
+    getBloodRecord: function (req, res, next) {
+        const id = req.query.id;
+        User.findById(id).then(bloodRecord => {
+            if (bloodRecord) {
+                res.status(200).end(JSON.stringify({
+                    message: 'success',
+                    bloodRecord: bloodRecord
+                }));
+                return;
+            }
+            res.status(200).end('can not bloodRecord comment');
+        }, fail => {
+            res.status(200).end('can not bloodRecord comment');
+        }).catch(err => {
+            res.status(500).end('server internal error');
+        });
+    },
+
+    updateBloodRecord: function (req, res, next) {
+        const id = req.body.id;
+        const text = req.body.commentText;
+        BloodRecord.update({ where: { id: id, commentText: text } }).then(() => {
+
+        });
+    },
+
+    queryUserRecords: function (req, res, next) {
+
+    },
+
+    getBloodRecords: function (req, res, next) {
+        const admin = req.headers.token.admin;
+        if (!admin) {
+            res.status(200).end('You are not admin');
+            return;
+        }
+        const limit = req.query.limit || 10;
+        const offset = req.query.offset || 1;
+        BloodRecord.findAndCountAll({
+            where: {
+
+            },
+            limit: req.query.limit || 10,
+            offset: req.query.offset || 1
+        }).then(result => {
+            const rd = {
+                total: result.count,
+                rows: result.rows
+            };
+            res.status(200).end(JSON.stringify(rd));
+        }
+            );
+
     }
-    return false;  
 
 }
-module.exports = {
-
-	addRecord : function(req,res,next){		
-		var blood = {
-			userId : req.body.userId,
-			dbp : req.body.dbp,
-			sbp : req.body.sbp,
-			hb : req.body.hb,
-			health : req.body.health,
-			commentID : req.body.commentID || null
-		};
-		if(checkValue(blood.userId) || checkValue(blood.dbp) || checkValue(blood.sbp) || checkValue(blood.hb) || checkValue(blood.health)){
-		
-			let result = {code : 103,message : 'Invalid json'};
-			console.log('Invalid json:'+JSON.stringify(result));
-			res.status(200).end(JSON.stringify(result));
-			return;
-
-		}
-		var sql = 'insert into bloodpressure (userId,dbp,sbp,hb,health,commentID) values ('+ blood.userId + ',' + blood.dbp + ',' + 
-		blood.sbp + ',' + blood.hb + ',' + blood.health + ',' + blood.commentID + ')';
-		console.log('add Record Sql::'+sql);
-		db.query(sql,function(err,results){
-			if(err){
-				console.log('err::'+err);
-				let error = {code : 103,message : err};
-				res.status(200).end(JSON.stringify(error));
-				return;
-			}
-			//insertId is the row number,
-			console.log('results.insertId::'+results.insertId);
-
-			if(typeof(results.insertId) !== undefined){
-				let result = {code : 100, message : 'add sucess' ,blood_id : results.insertId};
-				res.status(200).end(JSON.stringify(result));
-			}
-
-		});
-			
-	},
-	deleteRecord : function(req,res,next){
-		var blood_id = req.body.blood_id;
-		var sql = 'delete from bloodpressure where id = ' + blood_id;
-		db.query(sql,function(err,results){
-			if (err) {
-		 		let error = {code : 103,message : err};
-		 		res.status(200).end(JSON.stringify(error));
-		 		return;
-		 	}
-		 	console.log('results::'+JSON.stringify(results));
-		 	res.status(200).end('delete success');	
-		});
-
-	},
-	getRecord : function(req,res,next){
-
-		var blood_id = req.query.boold_id;
-		console.log('blood_id:'+blood_id);
-		var sql = 'select * from bloodpressure where id = '+blood_id;
-		console.log('getRecord sql:'+sql);
-		db.query(sql,function(err,results){
-			if (err) {
-		 		let error = {code : 103,message : err};
-		 		res.status(200).end(JSON.stringify(error));
-		 		return;
-		 	}
-		 	let result = {code : 100,message :'success',bloodpressure : results};
-		 	res.status(200).end(JSON.stringify(result));
-
-		});
-	},
-	updateRecord : function(req,res,next){
-		var blood = {
-			id : req.body.id,
-			userId : req.body.userId,
-			dbp : req.body.dbp,
-			sbp : req.body.sbp,
-			hb : req.body.hb,
-			health : req.body.health
-		};
-		var updateSql = 'update bloodpressure set dbp = '+ blood.dbp + ',sbp = '+ blood.sbp + ',hb = ' + blood.hb +
-		 ',health = ' + blood.health  + ',commentID = '+ blood.commentID + ' where id = ' +blood.id;
-		 console.log("update sql:"+updateSql);
-		 db.query(updateSql,function(err,results){
-		 	if (err) {
-		 		let error = {code : 103,message : err};
-		 		res.status(200).end(JSON.stringify(error));
-		 		return;
-		 	}
-		 	let result = {code : 100,message : 'update sucess'};
-		 	console.log('results affectedRows:'+results.affectedRows);
-		 	res.status(200).end(JSON.stringify(result));
-		 	return 
-		 });
-	},
-
-	getAllUserRecord : function(req,res,next){
-		
-		var admin = req.headers.token.admin;
-		if(!admin){
-			var response = {code : 102,message : "You are not admin"};
-			res.status(200).end(JSON.stringify(response));
-			return;
-		}
-		var limit = req.query.limit || 10;
-		var offset = req.query.offset ||  1;
-
-		console.log('\n limit::'+limit);
-		console.log('\n offset::'+offset);
-		console.log('\n web XMLHttpRequest request');
-		let selectSql,totalSql;
-		selectSql = 'select * from bloodpressure limit ' + (offset - 1)*limit + ',' + limit;
-		totalSql = 'select count(id) from bloodpressure' ;
-		db.query(totalSql,function(err,results){
-				if(err){
-					let error = {code : 103,message : err};
-					res.status(200).end(JSON.stringify(error));
-					return;
-				}
-				//results is json array, contain all columu name in table;
-				if(results !== 'undefined'){
-					
-					var count = results[0]['count(id)'];
-					console.log('\n count:'+ count);
-					db.query(selectSql,function(error,rts){
-						if(error){
-							let er = {code : 103,message : error};
-							res.status(200).end(JSON.stringify(er));
-							return;
-						}
-						if(rts !== 'undefined'){							
-							//if(req.headers.client === 'web'){
-							let r = {"total" : count,"rows" : rts};
-							res.status(200).end(JSON.stringify(r));						
-						}
-					});
-				}
-		});
-	},
-
-	queryUserRecord : function(req,res,next){
-
-		var limit = req.query.limit || 10;
-		var offset = req.query.offset ||  1;
-		var userId = req.query.userId;
-		var admin = req.headers.token.admin;
-		if(!admin){
-			userId = req.header.token.id;
-		}
-
-		let selectSql,totalSql;
-		selectSql = 'select * from bloodpressure  where userId = '+ userId + ' limit ' + (offset - 1)*limit + ',' + limit;
-		totalSql = 'select count(id) from bloodpressure where userId = ' + userId;			
-		db.query(totalSql,function(err,results){
-				if(err){
-					let error = {code : 103,message : err};
-					res.status(200).end(JSON.stringify(error));
-					return;
-				}
-				//results is json array, contain all columu name in table;
-				if(results !== 'undefined'){
-					
-					var count = results[0]['count(id)'];
-					console.log('\n count:'+ count);
-					db.query(selectSql,function(error,rts){
-						if(error){
-							let er = {code : 103,message : error};
-							res.status(200).end(JSON.stringify(er));
-							return;
-						}
-						if(rts !== 'undefined'){							
-								let r = {"total" : count,"rows" : rts};
-						        res.status(200).end(JSON.stringify(r));							
-						}
-					});
-				}
-			});
-
-	}
-
-};
