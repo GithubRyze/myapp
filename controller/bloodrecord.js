@@ -9,13 +9,13 @@ module.exports = {
             sbp: req.body.sbp,
             hb: req.body.hb,
             healthValue: req.body.healthValue
-        }
+        };
         BloodRecord.create({ where: bloodRecord }).then(bloodRecord => {
             if (bloodRecord) {
                 const result = {
                     message: 'success',
                     bloodRecord: bloodRecord
-                }
+                };
                 res.status(200).end(JSON.stringify(result));
             } else {
                 res.status(200).end('failed');
@@ -86,9 +86,8 @@ module.exports = {
                 rows: result.rows
             };
             res.status(200).end(JSON.stringify(rd));
-        }
-            );
+        });
 
     }
 
-}
+};

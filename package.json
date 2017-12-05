@@ -14,12 +14,16 @@
     "winston": "^2.3.1",
     "config-lite": "^1.5.0",
     "mysql": "^2.14.1",
-    "jwt-simple" : "^0.5.1",
-    "x-editable" : "^1.5.1",
-    "sequelize" : "^4.22.0",
-    "mosca" : "^2.5.1",
-    "mysql2" : "^1.4.2",
+    "jwt-simple": "^0.5.1",
+    "x-editable": "^1.5.1",
+    "sequelize": "^4.22.0",
+    "mosca": "^2.5.1",
+    "mysql2": "^1.4.2",
     "jpush-sdk": "^v3.4.3",
     "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.12.1",
+    "eslint-plugin-react": "^7.5.1"
   }
 }

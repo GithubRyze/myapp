@@ -7,13 +7,13 @@ module.exports = {
             commentId: req.body.commentId,
             temperature: req.body.temperature,
             hb: req.body.hb
-        }
+        };
         TemperatureHeartRateRecord.create({ where: temperatureHeartRateRecord }).then(temperatureHeartRateRecord => {
             if (temperatureHeartRateRecord) {
                 const result = {
                     message: 'success',
                     temperatureHeartRateRecord: bloodRecord
-                }
+                };
                 res.status(200).end(JSON.stringify(result));
             } else {
                 res.status(200).end('failed');
@@ -24,7 +24,6 @@ module.exports = {
     deleteTemperatureHeartRateRecord: function (req, res, next) {
         const id = req.body.id;
         TemperatureHeartRateRecord.destroy({ where: { id: id } }).then(msg => {
-            //console.log('user:'+JSON.stringify(user));
             if (msg)
                 res.status(500).end('delete TemperatureHeartRateRecord success');
             else
@@ -55,12 +54,14 @@ module.exports = {
     updateTemperatureHeartRateRecord: function (req, res, next) {
         const id = req.body.id;
         const text = req.body.commentText;
+        console.log('testeta');
+        console.log('testeta');
         TemperatureHeartRateRecord.update({ where: { id: id, commentText: text } }).then(() => {
-
         });
     },
 
     addBulkTemperatureHeartRateRecord: function (req, res, next) {
+
         var beans = req.body.temperatureHeartRate;
         TemperatureHeartRateRecord.bulkCreate(beans).then(() => {
             return TemperatureHeartRateRecord.findAll();
@@ -78,7 +79,7 @@ module.exports = {
 
         TemperatureHeartRateRecord.findAndCountAll({
             where: {
-                userId: userId,
+                userId: userId
             },
             limit: limit,
             offset: offset,
@@ -93,4 +94,4 @@ module.exports = {
         });
 
     }
-}
+};
