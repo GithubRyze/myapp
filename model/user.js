@@ -17,10 +17,8 @@ const User = db.define('user', {
     weight: { type: Sequelize.INTEGER, allowNull: true },
     age: { type: Sequelize.INTEGER, allowNull: true, validate: { min: 1, max: 150 } },
     admin: { type: Sequelize.BOOLEAN, allowNull: true, defaultValue: false },
-    avatar: { type: Sequelize.STRING, allowNull: true }
-    //phoneNumber : {type:Sequelize.STRING,allowNull : true}
-    //createdAt : {type : Sequelize.DATE,allowNull : false,defaultValue : Sequelize.NOW},
-    //updatedAt : {type : Sequelize.DATE,allowNull : false,defaultValue : Sequelize.NOW},
+    avatar: { type: Sequelize.STRING, allowNull: true },
+    phoneNumber: { type: Sequelize.STRING, allowNull: true}
 }, {});
 User.sync();
 module.exports = User;

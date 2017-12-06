@@ -8,7 +8,8 @@ const TemperatureHeartRateRecord = db.define('temperatureHeartRateRecord', {
     userId: { type: Sequelize.INTEGER, allowNull: false },
     commentId: { type: Sequelize.INTEGER, allowNull: true, defaultValue: null },
     temperature: { type: Sequelize.INTEGER, allowNull: false },
-    hb: { type: Sequelize.INTEGER, allowNull: false }
+    hb: { type: Sequelize.INTEGER, allowNull: false },
+    creaatedTime: { type: Sequelize.STRING, allowNull: false}
 }, {timestamps: false});
 TemperatureHeartRateRecord.sync();
 module.exports = TemperatureHeartRateRecord;
